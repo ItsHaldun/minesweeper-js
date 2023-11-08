@@ -5,13 +5,19 @@ function setup() {
     "difficulty": "easy",
   
     "canvas": {
-      width: 480,
-      height: 480
+      width: windowWidth,
+      height: windowHeight
     },
   
     "bomb": {
       fillColor: color(255, 0, 0),
 			bombColor: color(30),
+      strokeColor: color(0),
+      strokeWeight: 3
+    },
+
+		"flag": {
+			flagColor: color(255,0,0),
       strokeColor: color(0),
       strokeWeight: 3
     },
@@ -29,8 +35,8 @@ function setup() {
       color(0), color(80)]
   };
 
-	STATE = 0; // 0 -> playing; -1 -> game over
-  createCanvas(1+settings.canvas.width, 1+settings.canvas.height);
+	STATE = 0; // 0 -> playing; -1 -> game over; 1 -> won
+  canvas = createCanvas(1+settings.canvas.width, 1+settings.canvas.height);
   board = new Board(settings);
 
 	board.calculate_values();
@@ -42,20 +48,43 @@ function draw() {
 
 	if (STATE == -1) {
 		push();
-		textSize(settings.canvas.width/10);
+		//Semi-transparent Backdrop
+		fill(0,0,0, 90);
+		rect(0, 0, board.width, board.height);
+		
+		textSize(settings.canvas.width/12);
 		textAlign(CENTER);
 		fill(255,0,0);
 		stroke(0);
 		strokeWeight(3);
-		text("Game Over!", settings.canvas.width/2, settings.canvas.width/2);
+		text("Game Over!", board.width/2, board.height/2);
+		pop();
 	}
 }
 
+// For flags, unfortunately
+function keyPressed() {
+	let i = floor(mouseY/board.tileSize);
+	let j = floor(mouseX/board.tileSize);
+
+	if(keyCode === 70) {
+		board.plant_flag(i, j);
+	}
+
+	// TODO
+	// check flag win condition
+}
+
 function mouseClicked() {
+	// TODO
+	// Check revealed win condition
+
 	if (STATE != -1) {
 		let i = floor(mouseY/board.tileSize);
 		let j = floor(mouseX/board.tileSize);
 
-		STATE = board.reveal(i, j);
+		if(mouseButton === LEFT) {
+			STATE = board.reveal(i, j);
+		}
 	}
 }

@@ -1,11 +1,14 @@
 class Board {
   constructor(settings) {
     this.settings = settings;
-    this.width = settings.canvas.width;
-    this.height = settings.canvas.height;
     this.boardSettings = this.get_board_settings(settings.difficulty);
         
-    this.tileSize = min(floor(height/this.boardSettings.rows), floor(width/this.boardSettings.columns));
+    this.tileSize = min(floor(settings.canvas.height/this.boardSettings.rows), 
+												floor(settings.canvas.width/this.boardSettings.columns));
+
+		this.width = this.boardSettings.columns*this.tileSize;
+		this.height = this.boardSettings.rows*this.tileSize;
+
     this.tiles = this.create_tiles(this.boardSettings.rows, this.boardSettings.columns);
   }
 
@@ -14,7 +17,7 @@ class Board {
     
     for (let i=0; i<this.boardSettings.rows; i++) {
       for (let j=0; j<this.boardSettings.columns; j++) {
-        tiles.push(new Tile([i, j], this.tileSize, false, false));
+        tiles.push(new Tile([i, j], this.tileSize, false, false, false));
       }
     }
 
@@ -81,8 +84,12 @@ class Board {
 		let columns = this.boardSettings.columns;
 
 		if (row<rows && column<columns) {
+			// If the tile is flagged, do nothing
+			if (this.tiles[row*columns + column].flagged) {
+				return 0;
+			}
 			// If it's a bomb, it's game over
-			if (board.tiles[row*columns + column].isBomb) {
+			else if (this.tiles[row*columns + column].isBomb) {
 				// Reveal all the bombs
 				for (let k = 0; k<this.tiles.length; k++) {
 					if (this.tiles[k].isBomb) {
@@ -91,11 +98,12 @@ class Board {
 				}
 				return -1;
 			}
+
 			while (revealCache.length>0) {
 				let i = revealCache[0][0];
 				let j = revealCache[0][1];
 
-				if(!board.tiles[i*columns + j].revealed && board.tiles[i*columns + j].value == 0 && !board.tiles[i*columns + j].isBomb) {
+				if(!this.tiles[i*columns + j].revealed && this.tiles[i*columns + j].value == 0 && !this.tiles[i*columns + j].isBomb) {
 					if (j>0) {
 						revealCache.push([i, j-1]);
 					}
@@ -121,11 +129,18 @@ class Board {
 						}
 					}
 				}
-				board.tiles[i*columns + j].revealed = true;
+				this.tiles[i*columns + j].revealed = true;
+				this.tiles[i*columns + j].flagged = false;
+
 				revealCache.splice(0, 1);
 			}
 		}
 	return 0;
+	}
+
+	plant_flag(row, column) {
+		this.tiles[row*this.boardSettings.columns + column].flagged = 
+			!this.tiles[row*this.boardSettings.columns + column].flagged;
 	}
 
   // Draws all the tiles based on their status

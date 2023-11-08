@@ -41,6 +41,18 @@ class Tile {
 			pop();
     }
 
+		// Draw the flag
+		if (!this.revealed && this.flagged) {
+			push();
+      fill(settings.flag.flagColor);
+			stroke(settings.flag.strokeColor);
+			strokeWeight(settings.bomb.strokeWeight);
+			triangle(this.x+this.size*0.2, this.y+this.size*0.2, 
+							this.x+this.size*0.8, this.y+this.size*0.2,
+							this.x+this.size*0.5, this.y+this.size*0.8);
+			pop();
+    }
+
     // Draw the text
     if (this.revealed && !this.isBomb) {
       if (this.value>0) {
