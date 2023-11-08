@@ -46,6 +46,8 @@ function draw() {
   background(255);
   board.draw();
 
+
+	// Lose
 	if (STATE == -1) {
 		push();
 		//Semi-transparent Backdrop
@@ -60,31 +62,51 @@ function draw() {
 		text("Game Over!", board.width/2, board.height/2);
 		pop();
 	}
+
+	// Win
+	if (STATE == 1) {
+		push();
+		//Semi-transparent Backdrop
+		fill(0,0,0, 90);
+		rect(0, 0, board.width, board.height);
+		
+		textSize(settings.canvas.width/12);
+		textAlign(CENTER);
+		fill(0,255,0);
+		stroke(0);
+		strokeWeight(3);
+		text("You Win!", board.width/2, board.height/2);
+		pop();
+	}
 }
 
 // For flags, unfortunately
 function keyPressed() {
-	let i = floor(mouseY/board.tileSize);
-	let j = floor(mouseX/board.tileSize);
+	if(keyCode === 70 && STATE == 0) {
+		let i = floor(mouseY/board.tileSize);
+		let j = floor(mouseX/board.tileSize);
 
-	if(keyCode === 70) {
 		board.plant_flag(i, j);
+		// check win condition
+		STATE = board.check_victory();
 	}
-
-	// TODO
-	// check flag win condition
 }
 
 function mouseClicked() {
-	// TODO
-	// Check revealed win condition
 
-	if (STATE != -1) {
+	if (STATE == 0) {
 		let i = floor(mouseY/board.tileSize);
 		let j = floor(mouseX/board.tileSize);
 
 		if(mouseButton === LEFT) {
 			STATE = board.reveal(i, j);
+
+			if (STATE == -1) {
+				return -1;
+			}
+
+			// check win condition
+			STATE = board.check_victory();
 		}
 	}
 }

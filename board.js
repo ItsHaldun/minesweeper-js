@@ -150,6 +150,20 @@ class Board {
     }
   }
 
+	check_victory() {
+		for (let i=0; i<this.tiles.length; i++){
+			if (!this.tiles[i].isBomb && !this.tiles[i].revealed) {
+				print(1);
+				return 0;
+			}
+			if (!this.tiles[i].isBomb && this.tiles[i].flagged) {
+				print(2);
+				return 0;
+			}
+		}
+		return 1;
+	}
+
   get_board_settings(difficulty) {
     let settings = {};
 
