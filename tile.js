@@ -1,8 +1,8 @@
 class Tile {
-  constructor(index, size, isBomb=false, revealed=false, flagged=false) {
+  constructor(index, size, isBomb=false, revealed=false, flagged=false, xoffset=0, yoffset=0) {
     this.index = index;
-    this.x = index[1] * size;
-    this.y = index[0] * size;
+    this.x = index[1] * size + xoffset;
+    this.y = index[0] * size + yoffset;
     this.size = size;
     this.isBomb = isBomb;
     this.revealed = revealed;

@@ -2,9 +2,15 @@ class Board {
   constructor(settings) {
     this.settings = settings;
     this.boardSettings = this.get_board_settings(settings.difficulty);
+
+		this.max_height = settings.canvas.height*0.92;
+		this.max_width = settings.canvas.width*0.99;
+
+		this.x_offset = settings.canvas.height*0.01;
+		this.y_offset = settings.canvas.height*0.05;
         
-    this.tileSize = min(floor(settings.canvas.height/this.boardSettings.rows), 
-												floor(settings.canvas.width/this.boardSettings.columns));
+    this.tileSize = min(floor(this.max_height/this.boardSettings.rows), 
+												floor(this.max_width/this.boardSettings.columns));
 
 		this.width = this.boardSettings.columns*this.tileSize;
 		this.height = this.boardSettings.rows*this.tileSize;
@@ -17,7 +23,7 @@ class Board {
     
     for (let i=0; i<this.boardSettings.rows; i++) {
       for (let j=0; j<this.boardSettings.columns; j++) {
-        tiles.push(new Tile([i, j], this.tileSize, false, false, false));
+        tiles.push(new Tile([i, j], this.tileSize, false, false, false, this.x_offset, this.y_offset));
       }
     }
 
@@ -153,11 +159,9 @@ class Board {
 	check_victory() {
 		for (let i=0; i<this.tiles.length; i++){
 			if (!this.tiles[i].isBomb && !this.tiles[i].revealed) {
-				print(1);
 				return 0;
 			}
 			if (!this.tiles[i].isBomb && this.tiles[i].flagged) {
-				print(2);
 				return 0;
 			}
 		}
