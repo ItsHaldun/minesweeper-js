@@ -90,6 +90,7 @@ class Board {
 		let revealCache = [[row, column]];
 		let rows = this.boardSettings.rows;
 		let columns = this.boardSettings.columns;
+		let onClick = true;
 
 		if (row<rows && column<columns) {
 			// If the tile is flagged, do nothing
@@ -99,19 +100,57 @@ class Board {
 			// If it's a bomb, it's game over
 			else if (this.tiles[row*columns + column].isBomb) {
 				// Reveal all the bombs
-				for (let k = 0; k<this.tiles.length; k++) {
-					if (this.tiles[k].isBomb) {
-						this.tiles[k].revealed = true;
-					}
-				}
-				return -1;
+				return this.trigger_end();
 			}
 
 			while (revealCache.length>0) {
 				let i = revealCache[0][0];
 				let j = revealCache[0][1];
 
+				// Chording
+				if(this.tiles[i*columns + j].revealed && this.tiles[i*columns + j].value > 0 && !this.tiles[i*columns + j].isBomb && onClick) {
+					onClick = false;
+					let flag_count = 0;
+					let bomb_count = 0;
+					
+					// Check if number of bombs and flags are equal
+					for(let n=-1; n<=1; n++) {
+						for (let m = -1; m<=1; m++) {
+							if (n==0 && m==0) {
+								continue;
+							}
+							// Check for edge cases
+							if (i+n<rows && i+n>=0 && j+m<columns && j+m>=0) {
+								flag_count += this.tiles[(i+n)*columns + (j+m)].flagged ? 1:0;
+								bomb_count += this.tiles[(i+n)*columns + (j+m)].isBomb ? 1:0;
+							}
+						}
+					}
+					// Reveal the squares
+					if (flag_count==bomb_count) {
+						for(let n=-1; n<=1; n++) {
+							for (let m = -1; m<=1; m++) {
+								if (n==0 && m==0) {
+									continue;
+								}
+
+								if (i+n<rows && i+n>=0 && j+m<columns && j+m>=0) {
+									// If you had a unflagged bomb, game over
+									if (this.tiles[(i+n)*columns + (j+m)].isBomb && !this.tiles[(i+n)*columns + (j+m)].flagged) {
+										return this.trigger_end();
+									}
+									// If the square is not revealed and is not flagged, then reveal it
+									if (!this.tiles[(i+n)*columns + (j+m)].revealed && !this.tiles[(i+n)*columns + (j+m)].flagged) {
+										revealCache.push([i+n, j+m]);
+									}
+								}
+							}
+						}
+					}
+				}
+
 				if(!this.tiles[i*columns + j].revealed && this.tiles[i*columns + j].value == 0 && !this.tiles[i*columns + j].isBomb) {
+					onClick = false;
 					if (j>0) {
 						revealCache.push([i, j-1]);
 					}
@@ -163,6 +202,16 @@ class Board {
 				}
 			}
 		}
+	}
+
+	// Triggers all bombs and finishes the game
+	trigger_end() {
+		for (let k = 0; k<this.tiles.length; k++) {
+			if (this.tiles[k].isBomb) {
+				this.tiles[k].revealed = true;
+			}
+		}
+		return -1;
 	}
 
   // Draws all the tiles based on their status
