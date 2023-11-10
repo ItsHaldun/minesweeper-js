@@ -5,12 +5,24 @@ let text_bounds = [];
 let difficulty;
 let textWidth;
 
+let timeElapsed;
+let counter = setInterval(timer, 1000); 
+
+function timer() {
+	timeElapsed[0] += 1;
+	if (timeElapsed[0] % 60 == 0) {
+		timeElapsed[0] = 0;
+		timeElapsed[1] += 1;
+	}
+}
+
 function preload() {
   font = loadFont('assets/inconsolata.otf');
 }
 
 function setup() {
 	textWidth = windowWidth;
+	timeElapsed = [0, 0];
   settings = {
     "difficulty": "easy",
   
@@ -100,51 +112,66 @@ function draw() {
 function draw_header() {
 	push();
 	textSize(board.y_offset);
-	textAlign(CENTER, BOTTOM);
+	textAlign(LEFT, BOTTOM);
 	stroke(0);
 	strokeWeight(1);
 
-	old_bounds = [font.textBounds("easy", 1.1*board.x_offset, 0.98*board.y_offset),
-						font.textBounds("medium", 0.3*board.width+1.1*board.x_offset, 0.9*board.y_offset),
-						font.textBounds("hard", 0.55*board.width+board.x_offset, 0.9*board.y_offset)];
+	old_bounds = [font.textBounds("easy", 0, 0.98*board.y_offset),
+						font.textBounds("medium", 0, 0.98*board.y_offset),
+						font.textBounds("hard", 0, 0.98*board.y_offset)];
+
+	offsets = [board.x_offset,
+						1.37*old_bounds[0].w+board.x_offset,
+						1.4*old_bounds[1].w+1.4*old_bounds[0].w+board.x_offset];
 
 	if(difficulty == "easy") {
 		fill(0,50,200);
-		text("easy", 1.2*old_bounds[0].w/2+board.x_offset, 0.98*board.y_offset);
+		text("easy", offsets[0], 0.98*board.y_offset);
 		fill(0);
-		text("medium", 1.2*old_bounds[1].w+1.2*old_bounds[0].w/2+board.x_offset, 0.98*board.y_offset);
-		text("hard", 1.2*old_bounds[1].w+1.2*old_bounds[1].w+1.2*old_bounds[0].w/2+board.x_offset, 0.98*board.y_offset);
+		text("medium", offsets[1], 0.98*board.y_offset);
+		text("hard", offsets[2], 0.98*board.y_offset);
 	}
 	else if(difficulty== "medium") {
 		fill(0);
-		text("easy", 1.2*old_bounds[0].w/2+board.x_offset, 0.98*board.y_offset);
+		text("easy", offsets[0], 0.98*board.y_offset);
 		fill(0,50,200);
-		text("medium", 1.2*old_bounds[1].w+1.2*old_bounds[0].w/2+board.x_offset, 0.98*board.y_offset);
+		text("medium", offsets[1], 0.98*board.y_offset);
 		fill(0);
-		text("hard", 1.2*old_bounds[1].w+1.2*old_bounds[1].w+1.2*old_bounds[0].w/2+board.x_offset, 0.98*board.y_offset);
+		text("hard", offsets[2], 0.98*board.y_offset);
 	}
 	else {
 		fill(0);
-		text("easy", 1.2*old_bounds[0].w/2+board.x_offset, 0.98*board.y_offset);
-		text("medium", 1.2*old_bounds[1].w+1.2*old_bounds[0].w/2+board.x_offset, 0.98*board.y_offset);
+		text("easy", offsets[0], 0.98*board.y_offset);
+		text("medium", offsets[1], 0.98*board.y_offset);
 		fill(0,50,200);
-		text("hard", 1.2*old_bounds[1].w+1.2*old_bounds[1].w+1.2*old_bounds[0].w/2+board.x_offset, 0.98*board.y_offset);
+		text("hard", offsets[2], 0.98*board.y_offset);
 	}
 	pop();
 
-	bounds = [font.textBounds("easy", 1.2*old_bounds[0].w/2+board.x_offset, 0.98*board.y_offset),
-						font.textBounds("medium", 1.2*old_bounds[1].w+1.2*old_bounds[0].w/2+board.x_offset, 0.98*board.y_offset),
-						font.textBounds("hard", 1.2*old_bounds[1].w+1.2*old_bounds[1].w+1.2*old_bounds[0].w/2+board.x_offset, 0.98*board.y_offset)];
+	bounds = [font.textBounds("easy", offsets[0], 0.98*board.y_offset),
+						font.textBounds("medium", offsets[1], 0.98*board.y_offset),
+						font.textBounds("hard", offsets[2], 0.98*board.y_offset)];
 
-	
-	let score = floor(board.boardSettings.bombs - board.flags);
+
+	// Draw the timer
 	push();
 	textSize(board.y_offset);
 	textAlign(RIGHT, BOTTOM);
 	stroke(0);
 	strokeWeight(1);
 	fill(200,0,0);
-	text(score, board.width, 0.98*board.y_offset);
+	text(String(timeElapsed[1]).padStart(2, '0') + ":" + String(timeElapsed[0]).padStart(2, '0'), (1.2*board.width+offsets[2])/2, 0.98*board.y_offset);
+	pop();
+	
+	// Draw the Remaining Bombs
+	let remaining = floor(board.boardSettings.bombs - board.flags);
+	push();
+	textSize(board.y_offset);
+	textAlign(RIGHT, BOTTOM);
+	stroke(0);
+	strokeWeight(1);
+	fill(200,0,0);
+	text(remaining, board.width, 0.98*board.y_offset);
 	pop();
 
 	return bounds;
@@ -167,17 +194,18 @@ function keyPressed() {
 }
 
 function mouseClicked() {
+	print(text_bounds);
 	if (mouseY < board.y_offset) {
 		if(mouseButton === LEFT) {
-			if (mouseX>text_bounds[0].x-2.5*text_bounds[0].w/2 && mouseX<text_bounds[0].x+2.5*text_bounds[0].w/2) {
+			if (mouseX<text_bounds[0].x+2.2*text_bounds[0].w && mouseX>text_bounds[0].x) {
 				difficulty = storeItem("difficulty", "easy");
 				setup();
 			}
-			else if (mouseX>text_bounds[1].x-2.5*text_bounds[1].w/2 && mouseX<text_bounds[1].x+2.5*text_bounds[1].w) {
+			else if (mouseX<text_bounds[1].x+2.2*text_bounds[1].w && mouseX>text_bounds[1].x) {
 				difficulty = storeItem("difficulty", "medium");
 				setup();
 			}
-			else if (mouseX>text_bounds[2].x-2.5*text_bounds[2].w/2 && mouseX<text_bounds[2].x+2.5*text_bounds[2].w) {
+			else if (mouseX<text_bounds[2].x+2.2*text_bounds[2].w && mouseX>text_bounds[2].x) {
 				difficulty = storeItem("difficulty", "hard");
 				setup();
 			}
