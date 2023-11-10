@@ -61,7 +61,7 @@ function setup() {
 function draw() {
   background(255);
 
-	text_bounds = draw_difficulty_settings();
+	text_bounds = draw_header();
   board.draw();
 
 	// Lose
@@ -97,7 +97,7 @@ function draw() {
 	}
 }
 
-function draw_difficulty_settings() {
+function draw_header() {
 	push();
 	textSize(board.y_offset);
 	textAlign(CENTER, BOTTOM);
@@ -112,29 +112,40 @@ function draw_difficulty_settings() {
 		fill(0,50,200);
 		text("easy", 1.2*old_bounds[0].w/2+board.x_offset, 0.98*board.y_offset);
 		fill(0);
-		text("medium", 0.1*textWidth+1.2*old_bounds[1].w/2+board.x_offset, 0.98*board.y_offset);
-		text("hard", 0.24*textWidth+1.2*old_bounds[2].w/2+board.x_offset, 0.98*board.y_offset);
+		text("medium", 1.2*old_bounds[1].w+1.2*old_bounds[0].w/2+board.x_offset, 0.98*board.y_offset);
+		text("hard", 1.2*old_bounds[1].w+1.2*old_bounds[1].w+1.2*old_bounds[0].w/2+board.x_offset, 0.98*board.y_offset);
 	}
 	else if(difficulty== "medium") {
 		fill(0);
 		text("easy", 1.2*old_bounds[0].w/2+board.x_offset, 0.98*board.y_offset);
 		fill(0,50,200);
-		text("medium", 0.1*textWidth+1.2*old_bounds[1].w/2+board.x_offset, 0.98*board.y_offset);
+		text("medium", 1.2*old_bounds[1].w+1.2*old_bounds[0].w/2+board.x_offset, 0.98*board.y_offset);
 		fill(0);
-		text("hard", 0.24*textWidth+1.2*old_bounds[2].w/2+board.x_offset, 0.98*board.y_offset);
+		text("hard", 1.2*old_bounds[1].w+1.2*old_bounds[1].w+1.2*old_bounds[0].w/2+board.x_offset, 0.98*board.y_offset);
 	}
 	else {
 		fill(0);
 		text("easy", 1.2*old_bounds[0].w/2+board.x_offset, 0.98*board.y_offset);
-		text("medium", 0.1*textWidth+1.2*old_bounds[1].w/2+board.x_offset, 0.98*board.y_offset);
+		text("medium", 1.2*old_bounds[1].w+1.2*old_bounds[0].w/2+board.x_offset, 0.98*board.y_offset);
 		fill(0,50,200);
-		text("hard", 0.24*textWidth+1.2*old_bounds[2].w/2+board.x_offset, 0.98*board.y_offset);
+		text("hard", 1.2*old_bounds[1].w+1.2*old_bounds[1].w+1.2*old_bounds[0].w/2+board.x_offset, 0.98*board.y_offset);
 	}
 	pop();
 
 	bounds = [font.textBounds("easy", 1.2*old_bounds[0].w/2+board.x_offset, 0.98*board.y_offset),
-						font.textBounds("medium", 0.1*textWidth+1.2*old_bounds[1].w/2+board.x_offset, 0.98*board.y_offset),
-						font.textBounds("hard", 0.24*textWidth+1.2*old_bounds[2].w/2+board.x_offset, 0.98*board.y_offset)];
+						font.textBounds("medium", 1.2*old_bounds[1].w+1.2*old_bounds[0].w/2+board.x_offset, 0.98*board.y_offset),
+						font.textBounds("hard", 1.2*old_bounds[1].w+1.2*old_bounds[1].w+1.2*old_bounds[0].w/2+board.x_offset, 0.98*board.y_offset)];
+
+	
+	let score = floor(board.boardSettings.bombs - board.flags);
+	push();
+	textSize(board.y_offset);
+	textAlign(RIGHT, BOTTOM);
+	stroke(0);
+	strokeWeight(1);
+	fill(200,0,0);
+	text(score, board.width, 0.98*board.y_offset);
+	pop();
 
 	return bounds;
 }
@@ -158,15 +169,15 @@ function keyPressed() {
 function mouseClicked() {
 	if (mouseY < board.y_offset) {
 		if(mouseButton === LEFT) {
-			if (mouseX>text_bounds[0].x-2*text_bounds[0].w/2 && mouseX<text_bounds[0].x+2*text_bounds[0].w/2) {
+			if (mouseX>text_bounds[0].x-2.5*text_bounds[0].w/2 && mouseX<text_bounds[0].x+2.5*text_bounds[0].w/2) {
 				difficulty = storeItem("difficulty", "easy");
 				setup();
 			}
-			else if (mouseX>text_bounds[1].x-2*text_bounds[1].w/2 && mouseX<text_bounds[1].x+2*text_bounds[1].w) {
+			else if (mouseX>text_bounds[1].x-2.5*text_bounds[1].w/2 && mouseX<text_bounds[1].x+2.5*text_bounds[1].w) {
 				difficulty = storeItem("difficulty", "medium");
 				setup();
 			}
-			else if (mouseX>text_bounds[2].x-2*text_bounds[2].w/2 && mouseX<text_bounds[2].x+2*text_bounds[2].w) {
+			else if (mouseX>text_bounds[2].x-2.5*text_bounds[2].w/2 && mouseX<text_bounds[2].x+2.5*text_bounds[2].w) {
 				difficulty = storeItem("difficulty", "hard");
 				setup();
 			}

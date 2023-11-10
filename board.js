@@ -16,6 +16,8 @@ class Board {
 		this.height = this.boardSettings.rows*this.tileSize;
 
     this.tiles = this.create_tiles(this.boardSettings.rows, this.boardSettings.columns);
+
+		this.flags = 0;
   }
 
   create_tiles() {
@@ -136,8 +138,10 @@ class Board {
 					}
 				}
 				this.tiles[i*columns + j].revealed = true;
-				this.tiles[i*columns + j].flagged = false;
-
+				if(this.tiles[i*columns + j].flagged) {
+					this.flags += -1;
+					this.tiles[i*columns + j].flagged = false;
+				}
 				revealCache.splice(0, 1);
 			}
 		}
@@ -145,8 +149,20 @@ class Board {
 	}
 
 	plant_flag(row, column) {
-		this.tiles[row*this.boardSettings.columns + column].flagged = 
+		if(!this.tiles[row*this.boardSettings.columns + column].revealed) {
+			// Flip flag status
+			this.tiles[row*this.boardSettings.columns + column].flagged = 
 			!this.tiles[row*this.boardSettings.columns + column].flagged;
+		
+			if (this.tiles[row*this.boardSettings.columns + column].flagged) {
+				this.flags += 1;
+			}
+			else {
+				if (this.flags > 0) {
+					this.flags += -1;
+				}
+			}
+		}
 	}
 
   // Draws all the tiles based on their status
