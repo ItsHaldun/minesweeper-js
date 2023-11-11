@@ -6,18 +6,20 @@ let difficulty;
 let textWidth;
 
 let timeElapsed;
-let counter = setInterval(timer, 1000); 
+let counter = setInterval(timer, 1000);
 
 function timer() {
-	timeElapsed[0] += 1;
+	if (STATE==0) {
+		timeElapsed[0] += 1;
 	if (timeElapsed[0] % 60 == 0) {
 		timeElapsed[0] = 0;
 		timeElapsed[1] += 1;
 	}
+	}
 }
 
 function preload() {
-  font = loadFont('assets/inconsolata.otf');
+  font = loadFont('Inconsolata.otf');
 }
 
 function setup() {
@@ -194,7 +196,6 @@ function keyPressed() {
 }
 
 function mouseClicked() {
-	print(text_bounds);
 	if (mouseY < board.y_offset) {
 		if(mouseButton === LEFT) {
 			if (mouseX<text_bounds[0].x+2.2*text_bounds[0].w && mouseX>text_bounds[0].x) {
