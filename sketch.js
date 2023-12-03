@@ -2,6 +2,7 @@
 
 let font;
 let text_bounds = [];
+let offsets = [];
 let difficulty;
 let textWidth;
 
@@ -70,12 +71,14 @@ function setup() {
   board = new Board(settings);
 
 	board.calculate_values();
+
+	calculate_text_bounds();
 }
 
 function draw() {
   background(255);
 
-	text_bounds = draw_header();
+	draw_header();
   board.draw();
 
 	// Lose
@@ -91,6 +94,9 @@ function draw() {
 		stroke(0);
 		strokeWeight(3);
 		text("Game Over!", (board.width+board.x_offset)/2, (board.height+board.y_offset)/2);
+		end_bound = font.textBounds("Game Over!", (board.width+board.x_offset/2), (board.height+board.y_offset)/2);
+		textSize(settings.canvas.width/36);
+		text("Click to try again", (board.width+board.x_offset)/2, (board.height+board.y_offset)/2 + end_bound.h);
 		pop();
 	}
 
@@ -107,9 +113,34 @@ function draw() {
 		stroke(0);
 		strokeWeight(3);
 		text("You Win!", (board.width+board.x_offset)/2, (board.height+board.y_offset)/2);
+		end_bound = font.textBounds("You Win!", (board.width+board.x_offset/2), (board.height+board.y_offset)/2);
+		textSize(settings.canvas.width/36);
+		text("Click to try again", (board.width+board.x_offset)/2, (board.height+board.y_offset)/2 + end_bound.h);
 		pop();
 	}
 }
+
+
+function calculate_text_bounds() {
+	push();
+	textSize(board.y_offset);
+	textAlign(LEFT, BOTTOM);
+	stroke(0);
+	strokeWeight(1);
+	old_bounds = [font.textBounds("easy", 0, 0.98*board.y_offset),
+								font.textBounds("medium", 0, 0.98*board.y_offset),
+								font.textBounds("hard", 0, 0.98*board.y_offset)];
+
+	offsets = [board.x_offset,
+								1.37*old_bounds[0].w+board.x_offset,
+								1.4*old_bounds[1].w+1.37*old_bounds[0].w+board.x_offset];
+	
+	text_bounds = [font.textBounds("easy", offsets[0], 0.98*board.y_offset),
+						font.textBounds("medium", offsets[1], 0.98*board.y_offset),
+						font.textBounds("hard", offsets[2], 0.98*board.y_offset)];
+	pop();
+}
+
 
 function draw_header() {
 	push();
@@ -117,14 +148,6 @@ function draw_header() {
 	textAlign(LEFT, BOTTOM);
 	stroke(0);
 	strokeWeight(1);
-
-	old_bounds = [font.textBounds("easy", 0, 0.98*board.y_offset),
-						font.textBounds("medium", 0, 0.98*board.y_offset),
-						font.textBounds("hard", 0, 0.98*board.y_offset)];
-
-	offsets = [board.x_offset,
-						1.37*old_bounds[0].w+board.x_offset,
-						1.4*old_bounds[1].w+1.4*old_bounds[0].w+board.x_offset];
 
 	if(difficulty == "easy") {
 		fill(0,50,200);
@@ -150,10 +173,6 @@ function draw_header() {
 	}
 	pop();
 
-	bounds = [font.textBounds("easy", offsets[0], 0.98*board.y_offset),
-						font.textBounds("medium", offsets[1], 0.98*board.y_offset),
-						font.textBounds("hard", offsets[2], 0.98*board.y_offset)];
-
 
 	// Draw the timer
 	push();
@@ -175,9 +194,8 @@ function draw_header() {
 	fill(200,0,0);
 	text(remaining, board.width, 0.98*board.y_offset);
 	pop();
-
-	return bounds;
 }
+
 
 // For flags, unfortunately
 function keyPressed() {
@@ -195,18 +213,19 @@ function keyPressed() {
 	}
 }
 
+
 function mouseClicked() {
-	if (mouseY < board.y_offset) {
+	if ((mouseY < board.y_offset) && (mouseY > 0)) {
 		if(mouseButton === LEFT) {
-			if (mouseX<text_bounds[0].x+2.2*text_bounds[0].w && mouseX>text_bounds[0].x) {
+			if (mouseX<text_bounds[0].x+text_bounds[0].w && mouseX>text_bounds[0].x) {
 				difficulty = storeItem("difficulty", "easy");
 				setup();
 			}
-			else if (mouseX<text_bounds[1].x+2.2*text_bounds[1].w && mouseX>text_bounds[1].x) {
+			else if (mouseX<text_bounds[1].x+text_bounds[1].w && mouseX>text_bounds[1].x) {
 				difficulty = storeItem("difficulty", "medium");
 				setup();
 			}
-			else if (mouseX<text_bounds[2].x+2.2*text_bounds[2].w && mouseX>text_bounds[2].x) {
+			else if (mouseX<text_bounds[2].x+text_bounds[2].w && mouseX>text_bounds[2].x) {
 				difficulty = storeItem("difficulty", "hard");
 				setup();
 			}
@@ -231,5 +250,8 @@ function mouseClicked() {
 			// check win condition
 			STATE = board.check_victory();
 		}
+	}
+	else {
+		location.reload();
 	}
 }
