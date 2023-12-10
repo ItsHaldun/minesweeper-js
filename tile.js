@@ -47,9 +47,17 @@ class Tile {
       fill(settings.flag.flagColor);
 			stroke(settings.flag.strokeColor);
 			strokeWeight(settings.bomb.strokeWeight);
-			triangle(this.x+this.size*0.2, this.y+this.size*0.2, 
-							this.x+this.size*0.8, this.y+this.size*0.2,
-							this.x+this.size*0.5, this.y+this.size*0.8);
+			// The flag
+			triangle(this.x+this.size*0.2, this.y+this.size*0.3, 
+							this.x+this.size*0.5, this.y+this.size*0.1,
+							this.x+this.size*0.5, this.y+this.size*0.5);
+			stroke(0);
+			fill(0);
+			// The pole
+			line(this.x+this.size*0.5, this.y+this.size*0.5, 
+				this.x+this.size*0.5, this.y+this.size*0.7);
+			// The base
+			rect(this.x+this.size*0.25, this.y+this.size*0.7, this.size*0.5, this.size*0.1);
 			pop();
     }
 
