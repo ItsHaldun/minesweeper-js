@@ -37,7 +37,19 @@ class Tile {
 			stroke(settings.bomb.strokeColor);
 			strokeWeight(settings.bomb.strokeWeight);
 			ellipseMode(CENTER);
-			circle(this.x+this.size*0.5, this.y+this.size*0.5, this.size*0.8);
+			// Pins
+			rect(this.x+this.size*0.45, this.y+this.size*0.1, this.size*0.1, this.size*0.1);
+			rect(this.x+this.size*0.45, this.y+this.size*0.8, this.size*0.1, this.size*0.1);
+			rect(this.x+this.size*0.1, this.y+this.size*0.45, this.size*0.1, this.size*0.1);
+			rect(this.x+this.size*0.8, this.y+this.size*0.45, this.size*0.1, this.size*0.1);
+
+			rect(this.x+this.size*0.23, this.y+this.size*0.23, this.size*0.1, this.size*0.1);
+			rect(this.x+this.size*0.67, this.y+this.size*0.23, this.size*0.1, this.size*0.1);
+			rect(this.x+this.size*0.23, this.y+this.size*0.67, this.size*0.1, this.size*0.1);
+			rect(this.x+this.size*0.67, this.y+this.size*0.67, this.size*0.1, this.size*0.1);
+			
+			// Center
+			circle(this.x+this.size*0.5, this.y+this.size*0.5, this.size*0.6);
 			pop();
     }
 
