@@ -24,6 +24,11 @@ function preload() {
 }
 
 function setup() {
+	// Disable right click menu
+	for (let element of document.getElementsByClassName("p5Canvas")) {
+    element.addEventListener("contextmenu", (e) => e.preventDefault());
+  }
+
 	textWidth = windowWidth;
 	timeElapsed = [0, 0];
   settings = {
@@ -197,24 +202,7 @@ function draw_header() {
 }
 
 
-// For flags, unfortunately
-function keyPressed() {
-	if(keyCode === 70 && STATE == 0) {
-		let i = floor((mouseY-board.y_offset)/board.tileSize);
-		let j = floor((mouseX-board.x_offset)/board.tileSize);
-
-		if (i<0 || j < 0) {
-			return 0;
-		}
-
-		board.plant_flag(i, j);
-		// check win condition
-		STATE = board.check_victory();
-	}
-}
-
-
-function mouseClicked() {
+function mousePressed() {
 	if ((mouseY < board.y_offset) && (mouseY > 0)) {
 		if(mouseButton === LEFT) {
 			if (mouseX<text_bounds[0].x+text_bounds[0].w && mouseX>text_bounds[0].x) {
@@ -240,12 +228,32 @@ function mouseClicked() {
 			return 0;
 		}
 
+		// Left Click reveals tile
 		if(mouseButton === LEFT) {
 			STATE = board.reveal(i, j);
 
 			if (STATE == -1) {
 				return -1;
 			}
+
+			// check win condition
+			STATE = board.check_victory();
+		}
+
+		// Right Click plants flags
+		if(mouseButton === RIGHT && STATE == 0) {
+			let i = floor((mouseY-board.y_offset)/board.tileSize);
+			let j = floor((mouseX-board.x_offset)/board.tileSize);
+
+			if (i<0 || j < 0) {
+				return 0;
+			}
+
+			if (STATE == -1) {
+				return -1;
+			}
+
+			board.plant_flag(i, j);
 
 			// check win condition
 			STATE = board.check_victory();
