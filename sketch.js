@@ -1,10 +1,8 @@
-// For it to run you need a local server (check: https://github.com/processing/p5.js/wiki/Local-server)
-
 let font;
 let text_bounds = [];
 let offsets = [];
 let difficulty;
-let textWidth;
+let settings;
 
 let timeElapsed;
 let counter = setInterval(timer, 1000);
@@ -29,7 +27,6 @@ function setup() {
     element.addEventListener("contextmenu", (e) => e.preventDefault());
   }
 
-	textWidth = windowWidth;
 	timeElapsed = [0, 0];
   settings = {
     "difficulty": "easy",
@@ -59,10 +56,20 @@ function setup() {
       strokeWeight: 2
     },
   
-    "text": [color(0,0,255), color(0,180,0), 
-      color(255,0,0), color(0,0,120), 
-      color(150,0,0), color(0,150,150), 
-      color(0), color(80)]
+    "numbers": [color(0,0,255), color(0,180,0), 
+      					color(255,0,0), color(0,0,120), 
+      					color(150,0,0), color(0,150,150), 
+      					color(0), color(80)],
+		
+		"endCards": {
+			gameOverColor: color(255,0,0),
+			winColor: color(0,255,0),
+			strokeSize: 5,
+			heading_size: min(windowWidth, windowHeight)/7,
+			subheading_size:  min(windowWidth, windowHeight)/24,
+			backdrop: color(0,0,0, 128)
+		}
+		
   };
 
 	difficulty = getItem("difficulty");
@@ -90,17 +97,17 @@ function draw() {
 	if (STATE == -1) {
 		push();
 		//Semi-transparent Backdrop
-		fill(0,0,0, 90);
+		fill(settings.endCards.backdrop);
 		rect(board.x_offset, board.y_offset, board.width, board.height);
 		
-		textSize(settings.canvas.width/12);
+		textSize(settings.endCards.heading_size);
 		textAlign(CENTER);
-		fill(255,0,0);
+		fill(settings.endCards.gameOverColor);
 		stroke(0);
-		strokeWeight(3);
+		strokeWeight(settings.endCards.strokeSize);
 		text("Game Over!", (board.width+board.x_offset)/2, (board.height+board.y_offset)/2);
 		end_bound = font.textBounds("Game Over!", (board.width+board.x_offset/2), (board.height+board.y_offset)/2);
-		textSize(settings.canvas.width/36);
+		textSize(settings.endCards.subheading_size);
 		text("Click to try again", (board.width+board.x_offset)/2, (board.height+board.y_offset)/2 + end_bound.h);
 		pop();
 	}
@@ -109,17 +116,17 @@ function draw() {
 	if (STATE == 1) {
 		push();
 		//Semi-transparent Backdrop
-		fill(0,0,0, 90);
+		fill(settings.endCards.backdrop);
 		rect(board.x_offset, board.y_offset, board.width, board.height);
 		
-		textSize(settings.canvas.width/12);
+		textSize(settings.endCards.heading_size);
 		textAlign(CENTER);
-		fill(0,255,0);
+		fill(settings.endCards.winColor);
 		stroke(0);
-		strokeWeight(3);
+		strokeWeight(settings.endCards.strokeSize);
 		text("You Win!", (board.width+board.x_offset)/2, (board.height+board.y_offset)/2);
 		end_bound = font.textBounds("You Win!", (board.width+board.x_offset/2), (board.height+board.y_offset)/2);
-		textSize(settings.canvas.width/36);
+		textSize(settings.endCards.subheading_size);
 		text("Click to try again", (board.width+board.x_offset)/2, (board.height+board.y_offset)/2 + end_bound.h);
 		pop();
 	}

@@ -47,7 +47,7 @@ class Tile {
 			rect(this.x+this.size*0.67, this.y+this.size*0.23, this.size*0.1, this.size*0.1);
 			rect(this.x+this.size*0.23, this.y+this.size*0.67, this.size*0.1, this.size*0.1);
 			rect(this.x+this.size*0.67, this.y+this.size*0.67, this.size*0.1, this.size*0.1);
-			
+
 			// Center
 			circle(this.x+this.size*0.5, this.y+this.size*0.5, this.size*0.6);
 			pop();
@@ -77,7 +77,7 @@ class Tile {
     if (this.revealed && !this.isBomb) {
       if (this.value>0) {
         push();
-        fill(settings.text[this.value-1]);
+        fill(settings.numbers[this.value-1]);
         noStroke();
         textAlign(CENTER);
         textSize(this.fontSize);
